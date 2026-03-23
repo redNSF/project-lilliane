@@ -1,0 +1,111 @@
+@import "tailwindcss";
+
+@theme {
+  --color-surface: #111111;
+  --color-accent: #6ee7b7;
+  --color-mint: #6ee7b7;
+  
+  --font-geist: var(--font-geist-sans);
+  --font-mono: var(--font-jetbrains-mono);
+
+  --accent-glow: 0 0 20px -5px var(--color-accent);
+}
+
+@utility accent-glow {
+  box-shadow: var(--accent-glow);
+}
+
+@utility glass-card {
+  background: rgba(17, 17, 17, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 1rem;
+}
+
+@utility shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+}
+
+@utility animate-gradient-border {
+  position: relative;
+  border-radius: 0.75rem;
+  background: #0a0a0a;
+  padding: 1px;
+  z-index: 0;
+  overflow: hidden;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+      from 0deg,
+      transparent,
+      #6ee7b7,
+      transparent 30%
+    );
+    animation: rotate-border 4s linear infinite;
+    z-index: -1;
+  }
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes rotate-border {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+:root {
+  background-color: #0a0a0a;
+  color: #ededed;
+}
+
+body {
+  overflow-x: hidden;
+  position: relative;
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* Explicit fallback for input backgrounds */
+input, textarea {
+  background-color: #111111 !important;
+  color: white !important;
+}
+
+input:focus, textarea:focus {
+  background-color: #111111 !important;
+}
+
+.main-wrapper {
+  position: relative;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+.main-wrapper::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 50;
+}
