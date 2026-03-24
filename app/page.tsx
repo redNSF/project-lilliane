@@ -112,7 +112,7 @@ export default function Home() {
         >
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold text-[#6EE7B7] uppercase tracking-[0.2em] mb-8 backdrop-blur-md">
             <Sparkles className="w-4 h-4" />
-            Empowered by Llama 3.1
+            Empowered by Llama 3.3
           </div>
           
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tight text-white mb-6 leading-[1.05]">

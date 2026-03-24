@@ -14,8 +14,8 @@ interface ResultsViewProps {
 export default function ResultsView({ brief, onBack }: ResultsViewProps) {
   const [copied, setCopied] = useState(false);
 
-  const copyAsMarkdown = () => {
-    const markdown = `
+  const generateMarkdown = () => {
+    return `
 # Motion Design Brief: ${brief.title}
 **Total Duration:** ${brief.totalDuration}
 **Overall Mood:** ${brief.overallMood}
@@ -26,9 +26,9 @@ ${brief.scenes.map(s => `
 - **Timecode:** ${s.timecode} (${s.duration})
 - **Script:** "${s.scriptExcerpt}"
 - **Motion Style:** ${s.motionStyle}
-- **Color Palette:** ${s.colorHex.join(', ')} (${s.colorDescription})
+- **Color Palette:** ${(s.colorHex || []).join(', ')} (${s.colorDescription})
 - **Text Overlay:** ${s.textOverlay || 'None'}
-- **Assets:** ${s.assets.join(', ')}
+- **Assets:** ${(s.assets || []).join(', ')}
 - **Transition:** ${s.transition}
 - **Audio Mood:** ${s.audioMood}
 `).join('\n')}
@@ -36,10 +36,34 @@ ${brief.scenes.map(s => `
 ### Technical Notes
 ${brief.technicalNotes}
     `.trim();
+  };
 
+  const copyAsMarkdown = () => {
+    const markdown = generateMarkdown();
     navigator.clipboard.writeText(markdown);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const downloadAsMarkdown = () => {
+    const markdown = generateMarkdown();
+    const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    
+    // Sanitize the filename to alphanumeric characters and dashes only
+    const cleanTitle = brief.title.replace(/[^a-z0-9]+/gi, '-').replace(/(^-|-$)/g, '').toLowerCase() || 'motion';
+    a.download = `${cleanTitle}-brief.md`;
+    
+    document.body.appendChild(a);
+    a.click();
+    
+    // Cleanup
+    document.body.removeChild(a);
+    setTimeout(() => {
+      URL.revokeObjectURL(url);
+    }, 100);
   };
 
   return (
@@ -75,7 +99,16 @@ ${brief.technicalNotes}
             ) : (
               <Copy className="w-4 h-4" />
             )}
-            {copied ? 'Copied!' : 'Copy as Markdown'}
+            {copied ? 'Copied!' : 'Copy md'}
+          </button>
+          
+          <button
+            onClick={downloadAsMarkdown}
+            className="flex items-center gap-2 px-4 py-2 glass-card hover:border-[#6EE7B7]/50 transition-all text-sm font-medium"
+            title="Download as .md file"
+          >
+            <Download className="w-4 h-4" />
+            Download md
           </button>
         </div>
       </div>

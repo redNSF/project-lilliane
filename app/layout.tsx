@@ -27,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="dark" suppressHydrationWarning>
-      <body className="antialiased bg-[#0a0a0a] cursor-none">
+      <body className="antialiased bg-[#0a0a0a] cursor-none" suppressHydrationWarning>
         <CustomCursor />
         <div className={`${geistSans.variable} ${jetbrainsMono.variable} main-wrapper`}>
           {children}
