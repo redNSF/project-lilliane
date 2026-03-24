@@ -2,7 +2,7 @@
 
 import { Brief } from '@/lib/types';
 import { motion } from 'framer-motion';
-import { Copy, Check, Download, ArrowLeft, Share2, Sparkles, Send, Cpu, AlertCircle, Printer } from 'lucide-react';
+import { Copy, Check, Download, ArrowLeft, Share2, Sparkles, Send, Cpu, AlertCircle, Printer, ExternalLink } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import LZString from 'lz-string';
 import SceneCard from './SceneCard';
@@ -291,7 +291,25 @@ ${brief.technicalNotes}
                     {scene.colorDescription && scene.colorDescription !== 'None' && (
                       <div className="mt-4 pt-4 border-t border-gray-100">
                         <span className="text-[10px] uppercase font-black tracking-widest text-gray-400 block mb-1">Color Direction</span>
-                        <span className="text-xs font-bold text-gray-600">{scene.colorDescription}</span>
+                        <p className="text-xs font-bold text-gray-600 mb-2">{scene.colorDescription}</p>
+                        <div className="flex gap-3 print:hidden">
+                           <a 
+                             href={`https://coolors.co/${scene.colorHex.map(h => h.replace('#', '')).join('-')}`}
+                             target="_blank"
+                             rel="noopener noreferrer"
+                             className="text-[10px] font-bold text-blue-600 hover:underline flex items-center gap-1"
+                           >
+                             Coolors <ExternalLink className="w-2.5 h-2.5" />
+                           </a>
+                           <a 
+                             href={`https://www.pinterest.com/search/pins/?q=${encodeURIComponent(scene.colorDescription + ' motion design moodboard')}`}
+                             target="_blank"
+                             rel="noopener noreferrer"
+                             className="text-[10px] font-bold text-red-600 hover:underline flex items-center gap-1"
+                           >
+                             Pinterest <ExternalLink className="w-2.5 h-2.5" />
+                           </a>
+                        </div>
                       </div>
                     )}
                     {scene.assets && scene.assets.length > 0 && (
