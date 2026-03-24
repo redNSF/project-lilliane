@@ -20,16 +20,18 @@ Return ONLY a valid JSON object following this strict structure:
       "textOverlay": "What text appears on screen and its typography style",
       "assets": ["Stock footage description", "3D model name", "Icon type"],
       "transition": "How it moves to the next scene",
-      "audioMood": "Sound design or music direction for this specific moment"
+      "audioMood": "Sound design or music direction for this specific moment",
+      "fontPairing": "A Google Fonts pairing suggestion (e.g., 'Inter + Playfair Display') that matches the mood"
     }
   ],
   "technicalNotes": "Overall technical requirements (aspect ratio, frame rate, output format)"
 }
 
 Guidelines:
-- If the style is 'Commercial', focus on high-impact, fast-paced transitions.
-- If 'Explainer', emphasize clarity, iconography, and smooth character/shape motion.
-- If 'Social Media', design for vertical/square safe areas and hook the viewer in the first 3s.
+- If the style is 'Commercial', focus on high-impact, fast-paced transitions and bold, modern typography.
+- If 'Explainer', emphasize clarity, iconography, and clean sans-serif font pairings.
+- If 'Social Media', design for vertical/square safe areas and attention-grabbing font choices.
+- Suggest actual Google Fonts pairings that complement the scene's emotional tone.
 - Use professional motion design terminology (e.g., ease-in-out, parallax, kinetic typography, particle systems).
 - Ensure color palettes are harmonious and match the requested mood.
 - Be creative but grounded in production reality.`;

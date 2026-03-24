@@ -11,6 +11,7 @@ export interface Scene {
   assets: string[];
   transition: string;
   audioMood: string;
+  fontPairing: string;
 }
 
 export interface Brief {

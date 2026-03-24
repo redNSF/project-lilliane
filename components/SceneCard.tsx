@@ -2,7 +2,7 @@
 
 import { Scene } from '@/lib/types';
 import { motion } from 'framer-motion';
-import { Type, Play, Music, Layers, Palette, FolderOpen, ExternalLink } from 'lucide-react';
+import { Type, Play, Music, Layers, Palette, FolderOpen, ExternalLink, MousePointer2 } from 'lucide-react';
 import ColorSwatch from './ColorSwatch';
 
 interface SceneCardProps {
@@ -55,6 +55,16 @@ export default function SceneCard({ scene, index }: SceneCardProps) {
                 <p className="text-sm text-foreground/90 leading-tight">{scene.audioMood}</p>
               </div>
             </div>
+
+            {scene.fontPairing && (
+              <div className="flex gap-3 items-start">
+                <MousePointer2 className="w-4 h-4 text-[#6EE7B7] mt-1 shrink-0" />
+                <div>
+                  <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">Font Pairing</p>
+                  <p className="text-sm text-foreground/90 leading-tight font-serif italic">{scene.fontPairing}</p>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="space-y-4">

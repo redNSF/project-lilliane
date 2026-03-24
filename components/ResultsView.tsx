@@ -321,6 +321,11 @@ ${brief.technicalNotes}
                   </td>
                   <td className="p-4 text-sm leading-relaxed text-gray-800 border-l border-gray-200">
                     <p className="font-medium">{scene.motionStyle}</p>
+                    {scene.fontPairing && (
+                      <div className="mt-2 text-[10px] font-bold text-gray-400 font-serif italic">
+                        Typography: {scene.fontPairing}
+                      </div>
+                    )}
                     {scene.transition && (
                       <div className="mt-4 text-[10px] font-black uppercase tracking-widest text-white bg-black inline-block px-2 py-1 rounded">
                         Transition: {scene.transition}
