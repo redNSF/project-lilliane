@@ -1,61 +1,67 @@
-# Motionbrief 🎬
+# Motionbrief 🎬 — The Intelligent Motion Design Briefing Engine
 
-**Motionbrief** is a powerful **Script-to-Motion Design Brief Generator** built with Next.js and powered by Groq's high-speed AI inference (LLaMA 3.3). 
+**Motionbrief** is a high-end, production-ready **Script-to-Motion Design Brief Generator**. Built with **Next.js 15**, **Framer Motion**, and powered by **LLaMA 3.3 (via Groq)**, it transforms raw ideas into professional creative roadmaps in seconds.
 
-It takes an ordinary video script and instantly transforms it into a professional, highly detailed motion design brief. Designed for animators, creative directors, and motion studios, Motionbrief streamlines pre-production by generating timecodes, scene breakdowns, color palettes, typography suggestions, and asset lists.
+Designed for motion designers, creative directors, and motion studios, Motionbrief streamlines pre-production by generating timecodes, scene breakdowns, color palettes, typography suggestions, and asset lists.
 
-## Features ✨
+---
 
-- **Fast AI Generation:** Leverages Groq for lightning-fast brief generation.
-- **Scene-by-Scene Breakdown:** Automatically splits your script into logical motion scenes.
-- **Color Palettes:** Generates matching hex codes with one-click copy to clipboard functionality.
-- **Export Options:** Instantly copy the brief to your clipboard or download it as a `.md` (Markdown) file for your project management tools (Notion, Obsidian, GitHub).
-- **Premium UI:** Smooth, staggered animations and a sleek dark-mode glassmorphism interface powered by Framer Motion and Tailwind CSS.
+## 💎 Premium Features
 
-## Getting Started 🚀
+### 🎙️ AI Voice-to-Script Terminal
+Stop typing, start directing. Our custom **Premium Voice Input** features real-time, high-accuracy Web Speech transcription with an elegant, neon-glow interface. Speak your vision, and watch it materialize instantly.
 
-### Prerequisites
-Make sure you have Node.js installed, and you will need a free API key from [Groq](https://console.groq.com/keys) to power the AI generations.
+### 📋 Storyboard Mode (Production Doc)
+Switch from gorgeous visual cards to a strict, minimalist **Production Document** view. It generates a perfectly formatted B&W shot list with shot numbers, timecodes, and technical specs—ready for the studio floor.
 
-### Installation
+### 📄 Pro PDF Export
+Export your briefing documents as crisp, vector-quality PDFs. Optimized with custom print-CSS to ensure your production documents look professional on paper or digital tablets.
 
-1. Clone the repository:
+### 🎨 Automated Moodboarding & Type
+- **1-Click Moodboards:** Every scene automatically generates a **Coolors.co** palette and a targeted **Pinterest** reference search.
+- **Font Pairing Suggestions:** AI-suggested Google Font combinations (e.g., *Inter + Playfair*) tailored to the emotional tone of each specific scene.
+
+### ⚡ Style Presets
+Jumpstart your workflow with professional script templates for **30s Promo Ads**, **YouTube Intros**, and **Instagram Reels**. One click fills the terminal and selects the ideal motion style.
+
+### 🔗 Zero-Database Sharing
+Share your generated briefs instantly. We use **LZ-String compression** to bake the entire project data into a shareable URL—no database, no login, no friction.
+
+---
+
+## 🚀 Tech Stack
+
+- **Framework:** Next.js 15 (App Router)
+- **Styling:** Tailwind CSS
+- **Animations:** Framer Motion
+- **AI Integration:** Groq SDK (LLaMA 3.3 70B)
+- **Icons:** Lucide React
+- **Voice Logic:** Web Speech API
+
+---
+
+## 🛠️ Getting Started
+
+1. **Clone the repository:**
    ```bash
    git clone https://github.com/redNSF/project-lilliane.git
    cd project-lilliane
    ```
 
-2. Install the dependencies:
+2. **Install dependencies:**
    ```bash
    npm install
-   # or yarn, pnpm, bun
    ```
 
-3. Start the development server:
+3. **Get your API Key:**
+   Get a free API key from the [Groq Console](https://console.groq.com/keys).
+
+4. **Run the development server:**
    ```bash
    npm run dev
    ```
 
-4. Open [http://localhost:3000](http://localhost:3000) with your browser.
-
-## How to Use 📖
-
-1. **Enter API Key:** On the landing page, enter your Groq API Key. (Your key is only used locally and is not stored on any server).
-2. **Provide the Script:** Paste the script for your video or animation.
-3. **Configure Options:** Select your desired *Style* (e.g., Explainer, Commercial, UI Demo) and *Overall Mood*.
-4. **Generate:** Click the generate button and watch as Motionbrief instantly creates a detailed, professional brief.
-5. **Use the Brief:**
-   - **Click on Color Swatches** to instantly copy exact hex codes to your clipboard.
-   - **Click "Download md"** to save a markdown file of the entire brief to your computer.
-   - **Click "Copy md"** to copy the full markdown text to your clipboard.
-
-## Tech Stack 🛠️
-
-- **Framework:** Next.js 15 (App Router)
-- **Styling:** Tailwind CSS
-- **Animations:** Framer Motion
-- **AI Integration:** Groq SDK (LLaMA)
-- **Icons:** Lucide React
+Open [http://localhost:3000](http://localhost:3000) to start generating.
 
 ---
 *Transforming scripts into visual roadmaps, one scene at a time.*
