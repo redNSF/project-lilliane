@@ -2,20 +2,35 @@
 
 import { Brief } from '@/lib/types';
 import { motion } from 'framer-motion';
-import { Copy, Check, Download, ArrowLeft, Share2 } from 'lucide-react';
-import { useState } from 'react';
+import { Copy, Check, Download, ArrowLeft, Share2, Sparkles, Send, Cpu, AlertCircle } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
 import LZString from 'lz-string';
 import SceneCard from './SceneCard';
+import MagneticButton from './MagneticButton';
 
 interface ResultsViewProps {
   brief: Brief;
   onBack: () => void;
   isShareMode?: boolean;
+  onRevise?: (newBrief: Brief) => void;
+  apiKey?: string;
 }
 
-export default function ResultsView({ brief, onBack, isShareMode = false }: ResultsViewProps) {
+export default function ResultsView({ brief, onBack, isShareMode = false, onRevise, apiKey }: ResultsViewProps) {
   const [copied, setCopied] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
+  const [revisionNotes, setRevisionNotes] = useState('');
+  const [isRevising, setIsRevising] = useState(false);
+  const [revisionError, setRevisionError] = useState<string | null>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Auto-grow textarea for revisions
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${Math.max(100, textareaRef.current.scrollHeight)}px`;
+    }
+  }, [revisionNotes]);
 
   const generateMarkdown = () => {
     return `
@@ -68,11 +83,8 @@ ${brief.technicalNotes}
   };
 
   const generateShareLink = () => {
-    // Compress the brief object for URL use
     const jsonStr = JSON.stringify(brief);
     const compressed = LZString.compressToEncodedURIComponent(jsonStr);
-    
-    // Construct the absolute URL (works in dev and production)
     const origin = typeof window !== 'undefined' && window.location.origin ? window.location.origin : '';
     const shareUrl = `${origin}/share?b=${compressed}`;
     
@@ -81,12 +93,64 @@ ${brief.technicalNotes}
     setTimeout(() => setShareCopied(false), 2000);
   };
 
+  const handleRevise = async () => {
+    if (!revisionNotes.trim()) {
+      setRevisionError('Please enter revision notes.');
+      return;
+    }
+    if (!apiKey) {
+      setRevisionError('API Key is missing. Please return to the homepage and enter it.');
+      return;
+    }
+
+    setIsRevising(true);
+    setRevisionError(null);
+
+    try {
+      const response = await fetch('/api/revise', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-groq-key': apiKey,
+        },
+        body: JSON.stringify({ 
+          originalBrief: brief,
+          revisionNotes 
+        }),
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || 'Failed to revise brief');
+      }
+
+      const updatedBrief = await response.json();
+      
+      // Preserve style and createdAt if not returned by AI
+      const finalBrief: Brief = {
+        ...updatedBrief,
+        style: brief.style,
+        createdAt: brief.createdAt || new Date().toISOString()
+      };
+
+      if (onRevise) {
+        onRevise(finalBrief);
+        setRevisionNotes(''); // Clear notes on success
+      }
+    } catch (err: any) {
+      console.error(err);
+      setRevisionError(err.message);
+    } finally {
+      setIsRevising(false);
+    }
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className="max-w-4xl mx-auto w-full py-12 px-6"
+      className={`max-w-4xl mx-auto w-full py-12 px-6 transition-opacity duration-500 ${isRevising ? 'opacity-50 pointer-events-none' : ''}`}
     >
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
         <div>
@@ -156,6 +220,59 @@ ${brief.technicalNotes}
           {brief.technicalNotes}
         </p>
       </motion.div>
+
+      {/* Revision Mode Section */}
+      {!isShareMode && onRevise && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2 }}
+          className="mt-16 relative glass-card p-2 border-[#6EE7B7]/30"
+        >
+          <div className="absolute top-4 right-6 flex items-center gap-2 px-3 py-1 rounded-full bg-[#6EE7B7]/10 border border-[#6EE7B7]/20 text-[10px] font-bold text-[#6EE7B7] uppercase tracking-[0.1em]">
+            <Sparkles className="w-3 h-3" />
+            Revision Mode
+          </div>
+          
+          <textarea
+            ref={textareaRef}
+            placeholder="Need changes? Paste notes here (e.g., 'Make Scene 2's colors neon pink and change the music to upbeat synth')..."
+            value={revisionNotes}
+            onChange={(e) => setRevisionNotes(e.target.value)}
+            disabled={isRevising}
+            className="w-full bg-transparent p-6 pt-12 resize-none outline-none text-white placeholder:text-white/20 min-h-[120px] disabled:opacity-50"
+          />
+          
+          {revisionError && (
+            <div className="px-6 pb-2 text-red-400 text-sm flex items-center gap-2">
+              <AlertCircle className="w-4 h-4" />
+              {revisionError}
+            </div>
+          )}
+          
+          <div className="flex justify-end items-center px-4 py-3 border-t border-white/5 bg-surface/80 backdrop-blur-xl rounded-b-2xl">
+            <MagneticButton
+              onClick={handleRevise}
+              disabled={isRevising || !revisionNotes.trim()}
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-full font-bold text-sm transition-shadow group ${
+                isRevising || !revisionNotes.trim() ? 'bg-white/5 text-white/20' : 'bg-[#6EE7B7] text-[#0a0a0a] hover:shadow-[0_0_30px_-5px_#6EE7B7]'
+              }`}
+            >
+              {isRevising ? (
+                <>
+                  <Cpu className="w-4 h-4 animate-spin" />
+                  Updating Brief...
+                </>
+              ) : (
+                <>
+                  <Send className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                  Apply Revisions
+                </>
+              )}
+            </MagneticButton>
+          </div>
+        </motion.div>
+      )}
     </motion.div>
   );
 }

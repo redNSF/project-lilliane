@@ -41,3 +41,21 @@ ${script}
 
 Generate the detailed motion design brief in JSON format.
 `;
+
+export const REVISION_SYSTEM_PROMPT = `You are an expert Motion Design Director. Your task is to take an EXISTING motion design brief (provided in JSON) and update it based on the user's revision notes.
+
+Return ONLY a valid JSON object following the EXACT SAME strict structure as the original brief.
+Do not change scenes or details that the user did not ask to change. 
+If the user asks to change a specific scene (e.g., "make scene 2 more energetic"), update ONLY that scene's motionStyle, audioMood, colorHex, or whatever is appropriate to fulfill the revision, while keeping the rest of the brief exactly the same.
+
+The output MUST be a valid JSON object with the "title", "totalDuration", "overallMood", "scenes" array, and "technicalNotes".`;
+
+export const generateRevisionPrompt = (originalBrief: any, revisionNotes: string) => `
+Original Brief (JSON):
+${JSON.stringify(originalBrief, null, 2)}
+
+Revision Notes from Client/Director:
+"${revisionNotes}"
+
+Provide the updated motion design brief in the exact same JSON format.
+`;

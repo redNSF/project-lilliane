@@ -97,7 +97,18 @@ export default function Home() {
   if (!mounted) return null;
 
   if (result) {
-    return <ResultsView brief={result} onBack={() => setResult(null)} />;
+    return (
+      <ResultsView 
+        brief={result} 
+        onBack={() => setResult(null)} 
+        onRevise={(newBrief) => {
+          setResult(newBrief);
+          saveToHistory(newBrief);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
+        apiKey={apiKey}
+      />
+    );
   }
 
   return (
