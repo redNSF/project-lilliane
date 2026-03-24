@@ -22,11 +22,16 @@ declare global {
 export default function PremiumVoiceInput({ value, onChange, onSend, onTranscript, disabled }: PremiumVoiceInputProps) {
   const [interimText, setInterimText] = useState('');
   const [isRecording, setIsRecording] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
   const recognitionRef = useRef<any>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   
   const valueRef = useRef(value);
+  const isRecordingRef = useRef(isRecording);
+
   useEffect(() => { valueRef.current = value; }, [value]);
+  useEffect(() => { isRecordingRef.current = isRecording; }, [isRecording]);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -57,9 +62,21 @@ export default function PremiumVoiceInput({ value, onChange, onSend, onTranscrip
           setInterimText(currentInterim);
         };
 
+        recognition.onerror = (event: any) => {
+          console.error('Speech recognition error:', event.error);
+          if (event.error === 'not-allowed') {
+            setError('Microphone permission denied.');
+          } else if (event.error === 'no-speech') {
+            // No-speech is normal if user pauses
+          } else {
+            setError(`Error: ${event.error}`);
+          }
+          setIsRecording(false);
+        };
+
         recognition.onend = () => {
           // If we intentionally stopped it, or if it timed out but we want to stay active
-          if (isRecording) {
+          if (isRecordingRef.current) {
             try {
               recognition.start();
             } catch (e) {
@@ -80,8 +97,11 @@ export default function PremiumVoiceInput({ value, onChange, onSend, onTranscrip
   }, []); // Initialize once
 
   const toggleMic = () => {
+    setError(null);
     if (isRecording) {
-      if (recognitionRef.current) recognitionRef.current.stop();
+      if (recognitionRef.current) {
+        try { recognitionRef.current.stop(); } catch(e) {}
+      }
       setIsRecording(false);
       setInterimText('');
       if (onTranscript) onTranscript(valueRef.current);
@@ -91,6 +111,7 @@ export default function PremiumVoiceInput({ value, onChange, onSend, onTranscrip
         setIsRecording(true);
       } catch (err) {
         console.error("Mic start failed", err);
+        setError('Failed to start mic.');
       }
     }
   };
@@ -128,9 +149,9 @@ export default function PremiumVoiceInput({ value, onChange, onSend, onTranscrip
       </AnimatePresence>
 
       <div 
-        className="relative w-full flex flex-col z-10 overflow-hidden"
+        className="relative w-full flex flex-col z-10 overflow-hidden shadow-[0_0_50px_-12px_rgba(110,231,183,0.1)]"
         style={{
-          background: 'rgba(18,18,32,0.95)',
+          background: 'rgba(6, 40, 30, 0.95)',
           borderRadius: '20px',
         }}
       >
@@ -150,11 +171,13 @@ export default function PremiumVoiceInput({ value, onChange, onSend, onTranscrip
           />
         )}
         {!isRecording && (
-           <div className="absolute inset-0 border border-white/10 rounded-[20px] pointer-events-none z-20" />
+           <div className={`absolute inset-0 border rounded-[20px] pointer-events-none z-20 ${error ? 'border-red-500/50 shadow-[0_0_15px_rgba(239,68,68,0.2)]' : 'border-white/10'}`} />
         )}
 
         {/* Text Display / Input Area */}
         <div className="relative w-full min-h-[160px] max-h-[400px] overflow-y-auto">
+          {/* Subtle Emerald Glow inside */}
+          <div className="absolute inset-0 bg-gradient-to-br from-[#6EE7B7]/5 to-transparent pointer-events-none z-0" />
           {/* Visual Display layer */}
           <div 
             className={`absolute inset-0 p-6 pointer-events-none z-10 ${sharedTextStyles}`}
@@ -166,8 +189,14 @@ export default function PremiumVoiceInput({ value, onChange, onSend, onTranscrip
               <span className="text-white/55 ml-1">{interimText}</span>
             )}
             {/* Blinking emerald caret */}
-            {(isRecording || value.length === 0) && (
+            {(isRecording || (value.length === 0 && !error)) && (
               <span className="inline-block w-[3px] h-5 bg-[#6EE7B7] ml-1 rounded-sm animate-pulse align-middle" />
+            )}
+            
+            {error && (
+              <div className="absolute top-4 right-4 p-2 rounded-lg bg-red-500/10 border border-red-500/20 text-[10px] text-red-500 uppercase tracking-widest font-bold z-30 animate-pulse">
+                {error}
+              </div>
             )}
           </div>
 
@@ -178,7 +207,7 @@ export default function PremiumVoiceInput({ value, onChange, onSend, onTranscrip
             value={value}
             onChange={(e) => onChange(e.target.value)}
             disabled={disabled}
-            placeholder={isRecording ? "" : "Start speaking or type your idea here..."}
+            placeholder={isRecording ? "" : error ? "Mic error. Please type instead..." : "Start speaking or type your idea here..."}
             style={{ 
                color: 'rgba(255,255,255,0.01)', 
                overflowWrap: 'break-word',
