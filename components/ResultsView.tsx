@@ -2,7 +2,7 @@
 
 import { Brief } from '@/lib/types';
 import { motion } from 'framer-motion';
-import { Copy, Check, Download, ArrowLeft, Share2, Sparkles, Send, Cpu, AlertCircle } from 'lucide-react';
+import { Copy, Check, Download, ArrowLeft, Share2, Sparkles, Send, Cpu, AlertCircle, Printer } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import LZString from 'lz-string';
 import SceneCard from './SceneCard';
@@ -19,6 +19,7 @@ interface ResultsViewProps {
 export default function ResultsView({ brief, onBack, isShareMode = false, onRevise, apiKey }: ResultsViewProps) {
   const [copied, setCopied] = useState(false);
   const [shareCopied, setShareCopied] = useState(false);
+  const [viewMode, setViewMode] = useState<'brief' | 'storyboard'>('brief');
   const [revisionNotes, setRevisionNotes] = useState('');
   const [isRevising, setIsRevising] = useState(false);
   const [revisionError, setRevisionError] = useState<string | null>(null);
@@ -93,6 +94,17 @@ ${brief.technicalNotes}
     setTimeout(() => setShareCopied(false), 2000);
   };
 
+  const handleDownloadPDF = () => {
+    if (viewMode !== 'storyboard') {
+      setViewMode('storyboard');
+      setTimeout(() => {
+        window.print();
+      }, 100);
+    } else {
+      window.print();
+    }
+  };
+
   const handleRevise = async () => {
     if (!revisionNotes.trim()) {
       setRevisionError('Please enter revision notes.');
@@ -150,9 +162,9 @@ ${brief.technicalNotes}
       initial={{ opacity: 0, x: 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -20 }}
-      className={`max-w-4xl mx-auto w-full py-12 px-6 transition-opacity duration-500 ${isRevising ? 'opacity-50 pointer-events-none' : ''}`}
+      className={`max-w-4xl mx-auto w-full py-12 px-6 transition-opacity duration-500 ${isRevising ? 'opacity-50 pointer-events-none' : ''} print:p-0 print:max-w-none`}
     >
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12 print:hidden">
         <div>
           {!isShareMode && (
             <button 
@@ -197,81 +209,190 @@ ${brief.technicalNotes}
             <Download className="w-4 h-4" />
             Download md
           </button>
+          
+          <button
+            onClick={handleDownloadPDF}
+            className="flex items-center gap-2 px-4 py-2 bg-[#6EE7B7] text-[#0a0a0a] hover:bg-[#34D399] rounded-lg transition-all text-sm font-bold shadow-[0_0_15px_-3px_rgba(110,231,183,0.4)]"
+            title="Save as PDF"
+          >
+            <Printer className="w-4 h-4" />
+            Save as PDF
+          </button>
         </div>
       </div>
 
-      <div className="space-y-8">
-        {brief.scenes.map((scene, index) => (
-          <SceneCard key={scene.id} scene={scene} index={index} />
-        ))}
+      {/* View Toggle */}
+      <div className="flex justify-center mb-12 print:hidden">
+        <div className="flex bg-black/40 backdrop-blur-md border border-white/10 rounded-full p-1 shadow-xl">
+          <button
+            onClick={() => setViewMode('brief')}
+            className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all ${
+              viewMode === 'brief' ? 'bg-[#6EE7B7] text-[#0a0a0a] shadow-[0_0_20px_-5px_#6EE7B7]' : 'text-white/60 hover:text-white'
+            }`}
+          >
+            Visual Boards
+          </button>
+          <button
+            onClick={() => setViewMode('storyboard')}
+            className={`px-6 py-2.5 rounded-full text-sm font-bold transition-all ${
+              viewMode === 'storyboard' ? 'bg-white text-black shadow-[0_0_20px_-5px_rgba(255,255,255,0.8)]' : 'text-white/60 hover:text-white'
+            }`}
+          >
+            Production Doc
+          </button>
+        </div>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1 }}
-        className="mt-16 p-8 glass-card border-[#6EE7B7]/20 border-dashed"
-      >
-        <h3 className="text-[#6EE7B7] font-bold text-sm uppercase tracking-widest mb-4 flex items-center gap-2">
-          <Download className="w-4 h-4" />
-          Technical Notes
-        </h3>
-        <p className="text-sm text-white/60 leading-relaxed whitespace-pre-wrap">
-          {brief.technicalNotes}
-        </p>
-      </motion.div>
-
-      {/* Revision Mode Section */}
-      {!isShareMode && onRevise && (
-        <motion.div
+      {viewMode === 'brief' ? (
+        <div className="space-y-8">
+          {brief.scenes.map((scene, index) => (
+            <SceneCard key={scene.id} scene={scene} index={index} />
+          ))}
+        </div>
+      ) : (
+        <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2 }}
-          className="mt-16 relative glass-card p-2 border-[#6EE7B7]/30"
+          className="w-full bg-[#FAFAFA] text-black p-10 rounded-2xl shadow-2xl overflow-x-auto print:p-0 print:shadow-none print:bg-white"
         >
-          <div className="absolute top-4 right-6 flex items-center gap-2 px-3 py-1 rounded-full bg-[#6EE7B7]/10 border border-[#6EE7B7]/20 text-[10px] font-bold text-[#6EE7B7] uppercase tracking-[0.1em]">
-            <Sparkles className="w-3 h-3" />
-            Revision Mode
-          </div>
-          
-          <textarea
-            ref={textareaRef}
-            placeholder="Need changes? Paste notes here (e.g., 'Make Scene 2's colors neon pink and change the music to upbeat synth')..."
-            value={revisionNotes}
-            onChange={(e) => setRevisionNotes(e.target.value)}
-            disabled={isRevising}
-            className="w-full bg-transparent p-6 pt-12 resize-none outline-none text-white placeholder:text-white/20 min-h-[120px] disabled:opacity-50"
-          />
-          
-          {revisionError && (
-            <div className="px-6 pb-2 text-red-400 text-sm flex items-center gap-2">
-              <AlertCircle className="w-4 h-4" />
-              {revisionError}
+          <div className="mb-8 pb-6 border-b-4 border-black font-sans">
+            <div className="flex justify-between items-end">
+              <div>
+                <h2 className="text-4xl font-black uppercase tracking-tighter mix-blend-difference">{brief.title}</h2>
+                <h3 className="text-xl font-bold uppercase tracking-widest text-gray-500 mt-1">Shot List Detail</h3>
+              </div>
+              <div className="text-right">
+                <div className="text-sm font-bold bg-black text-white px-3 py-1 inline-block uppercase tracking-widest mb-1">Total runtime: {brief.totalDuration}</div>
+                <div className="text-sm font-bold text-gray-600 uppercase tracking-widest">Style: {brief.style}</div>
+                <div className="text-sm font-bold text-gray-600 uppercase tracking-widest">Mood: {brief.overallMood}</div>
+              </div>
             </div>
-          )}
-          
-          <div className="flex justify-end items-center px-4 py-3 border-t border-white/5 bg-surface/80 backdrop-blur-xl rounded-b-2xl">
-            <MagneticButton
-              onClick={handleRevise}
-              disabled={isRevising || !revisionNotes.trim()}
-              className={`flex items-center gap-2 px-6 py-2.5 rounded-full font-bold text-sm transition-shadow group ${
-                isRevising || !revisionNotes.trim() ? 'bg-white/5 text-white/20' : 'bg-[#6EE7B7] text-[#0a0a0a] hover:shadow-[0_0_30px_-5px_#6EE7B7]'
-              }`}
-            >
-              {isRevising ? (
-                <>
-                  <Cpu className="w-4 h-4 animate-spin" />
-                  Updating Brief...
-                </>
-              ) : (
-                <>
-                  <Send className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                  Apply Revisions
-                </>
-              )}
-            </MagneticButton>
           </div>
+          <table className="w-full text-left border-collapse min-w-[800px] font-sans">
+            <thead>
+              <tr className="border-b-2 border-black bg-gray-100">
+                <th className="p-4 text-xs font-black uppercase tracking-widest text-center w-16">Shot</th>
+                <th className="p-4 text-xs font-black uppercase tracking-widest w-32 border-l border-gray-300">Timecode</th>
+                <th className="p-4 text-xs font-black uppercase tracking-widest w-[30%] border-l border-gray-300">Visual Action / Camera</th>
+                <th className="p-4 text-xs font-black uppercase tracking-widest w-[25%] border-l border-gray-300">Motion Style</th>
+                <th className="p-4 text-xs font-black uppercase tracking-widest w-[25%] border-l border-gray-300">Audio / Music</th>
+              </tr>
+            </thead>
+            <tbody>
+              {brief.scenes.map((scene) => (
+                <tr key={scene.id} className="border-b border-gray-300 hover:bg-gray-50 transition-colors align-top group">
+                  <td className="p-4 text-3xl font-black text-center text-gray-300 group-hover:text-black transition-colors">{scene.id}</td>
+                  <td className="p-4 border-l border-gray-200">
+                    <div className="font-mono text-sm font-bold bg-gray-100 inline-block px-2 py-1 rounded">{scene.timecode}</div>
+                    <div className="text-xs text-gray-500 mt-2 uppercase tracking-widest font-bold">{scene.duration}</div>
+                  </td>
+                  <td className="p-4 text-sm leading-relaxed text-gray-800 border-l border-gray-200">
+                    <p className="font-medium italic text-gray-600">"{scene.scriptExcerpt}"</p>
+                    {scene.colorDescription && scene.colorDescription !== 'None' && (
+                      <div className="mt-4 pt-4 border-t border-gray-100">
+                        <span className="text-[10px] uppercase font-black tracking-widest text-gray-400 block mb-1">Color Direction</span>
+                        <span className="text-xs font-bold text-gray-600">{scene.colorDescription}</span>
+                      </div>
+                    )}
+                    {scene.assets && scene.assets.length > 0 && (
+                      <div className="mt-4 pt-4 border-t border-gray-100">
+                        <span className="text-[10px] uppercase font-black tracking-widest text-gray-400 block mb-1">Required Assets</span>
+                        <span className="text-xs font-bold text-blue-600">{scene.assets.join(', ')}</span>
+                      </div>
+                    )}
+                  </td>
+                  <td className="p-4 text-sm leading-relaxed text-gray-800 border-l border-gray-200">
+                    <p className="font-medium">{scene.motionStyle}</p>
+                    {scene.transition && (
+                      <div className="mt-4 text-[10px] font-black uppercase tracking-widest text-white bg-black inline-block px-2 py-1 rounded">
+                        Transition: {scene.transition}
+                      </div>
+                    )}
+                  </td>
+                  <td className="p-4 text-sm leading-relaxed text-gray-800 border-l border-gray-200">
+                    <div className="pt-1">
+                      <span className="text-[10px] uppercase font-black tracking-widest text-gray-400 block mb-1">Target Mood / Audio</span>
+                      <span className="text-sm font-bold text-emerald-600">{scene.audioMood}</span>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </motion.div>
+      )}
+
+      {/* Brief-only Footer Sections */}
+      {viewMode === 'brief' && (
+        <>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1 }}
+            className="mt-16 p-8 glass-card border-[#6EE7B7]/20 border-dashed"
+          >
+            <h3 className="text-[#6EE7B7] font-bold text-sm uppercase tracking-widest mb-4 flex items-center gap-2">
+              <Download className="w-4 h-4" />
+              Technical Notes
+            </h3>
+            <p className="text-sm text-white/60 leading-relaxed whitespace-pre-wrap">
+              {brief.technicalNotes}
+            </p>
+          </motion.div>
+
+          {/* Revision Mode Section */}
+          {!isShareMode && onRevise && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1.2 }}
+              className="mt-16 relative glass-card p-2 border-[#6EE7B7]/30"
+            >
+              <div className="absolute top-4 right-6 flex items-center gap-2 px-3 py-1 rounded-full bg-[#6EE7B7]/10 border border-[#6EE7B7]/20 text-[10px] font-bold text-[#6EE7B7] uppercase tracking-[0.1em]">
+                <Sparkles className="w-3 h-3" />
+                Revision Mode
+              </div>
+              
+              <textarea
+                ref={textareaRef}
+                placeholder="Need changes? Paste notes here (e.g., 'Make Scene 2's colors neon pink and change the music to upbeat synth')..."
+                value={revisionNotes}
+                onChange={(e) => setRevisionNotes(e.target.value)}
+                disabled={isRevising}
+                className="w-full bg-transparent p-6 pt-12 resize-none outline-none text-white placeholder:text-white/20 min-h-[120px] disabled:opacity-50"
+              />
+              
+              {revisionError && (
+                <div className="px-6 pb-2 text-red-400 text-sm flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4" />
+                  {revisionError}
+                </div>
+              )}
+              
+              <div className="flex justify-end items-center px-4 py-3 border-t border-white/5 bg-surface/80 backdrop-blur-xl rounded-b-2xl">
+                <MagneticButton
+                  onClick={handleRevise}
+                  disabled={isRevising || !revisionNotes.trim()}
+                  className={`flex items-center gap-2 px-6 py-2.5 rounded-full font-bold text-sm transition-shadow group ${
+                    isRevising || !revisionNotes.trim() ? 'bg-white/5 text-white/20' : 'bg-[#6EE7B7] text-[#0a0a0a] hover:shadow-[0_0_30px_-5px_#6EE7B7]'
+                  }`}
+                >
+                  {isRevising ? (
+                    <>
+                      <Cpu className="w-4 h-4 animate-spin" />
+                      Updating Brief...
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                      Apply Revisions
+                    </>
+                  )}
+                </MagneticButton>
+              </div>
+            </motion.div>
+          )}
+        </>
       )}
     </motion.div>
   );

@@ -2,7 +2,7 @@
 
 import { Scene } from '@/lib/types';
 import { motion } from 'framer-motion';
-import { Type, Play, Music, Layers, Palette, FolderOpen } from 'lucide-react';
+import { Type, Play, Music, Layers, Palette, FolderOpen, ExternalLink } from 'lucide-react';
 import ColorSwatch from './ColorSwatch';
 
 interface SceneCardProps {
@@ -77,7 +77,7 @@ export default function SceneCard({ scene, index }: SceneCardProps) {
         </div>
 
         <div className="pt-4 border-t border-white/5 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-6">
             <div className="flex items-center gap-1.5">
               <Palette className="w-3.5 h-3.5 text-white/40" />
               <div className="flex gap-1.5">
@@ -85,6 +85,26 @@ export default function SceneCard({ scene, index }: SceneCardProps) {
                   <ColorSwatch key={i} hex={hex} />
                 ))}
               </div>
+            </div>
+
+            <div className="flex items-center gap-3 border-l border-white/10 pl-4">
+              <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Moodboard:</span>
+              <a 
+                href={`https://coolors.co/${scene.colorHex.map(h => h.replace('#', '')).join('-')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[10px] font-bold text-[#6EE7B7]/60 hover:text-[#6EE7B7] transition-colors flex items-center gap-1"
+              >
+                Coolors <ExternalLink className="w-2.5 h-2.5" />
+              </a>
+              <a 
+                href={`https://www.pinterest.com/search/pins/?q=${encodeURIComponent(scene.colorDescription + ' motion design moodboard')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[10px] font-bold text-[#6EE7B7]/60 hover:text-[#6EE7B7] transition-colors flex items-center gap-1"
+              >
+                Pinterest <ExternalLink className="w-2.5 h-2.5" />
+              </a>
             </div>
           </div>
 
