@@ -21,7 +21,7 @@ Make sure you have Node.js installed, and you will need a free API key from [Gro
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/project-lilliane.git
+   git clone https://github.com/redNSF/project-lilliane.git
    cd project-lilliane
    ```
 
