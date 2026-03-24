@@ -8,7 +8,7 @@ import ResultsView from '@/components/ResultsView';
 import SkeletonCard from '@/components/SkeletonCard';
 import Toast from '@/components/Toast';
 import AnimatedBackground from '@/components/AnimatedBackground';
-import MagneticButton from '@/components/MagneticButton';
+import PremiumVoiceInput from '@/components/PremiumVoiceInput';
 import TextReveal from '@/components/TextReveal';
 import { Brief, StyleType } from '@/lib/types';
 
@@ -194,47 +194,15 @@ export default function Home() {
             <StylePicker selected={style} onChange={setStyle} />
           </div>
 
-          {/* Script Input */}
-          <div className="w-full relative glass-card p-2">
-            <textarea
-              ref={textareaRef}
-              placeholder="Paste your script here... (e.g., 'A fast-paced intro for a tech brand...')"
+          {/* Premium Voice Input / Script Area */}
+          <div className="w-full mt-4">
+            <PremiumVoiceInput 
               value={script}
-              onChange={(e) => setScript(e.target.value)}
-              rows={5}
-              className="w-full bg-transparent p-4 resize-none outline-none text-white placeholder:text-white/10 min-h-[200px]"
+              onChange={setScript}
+              onSend={handleGenerate}
+              onTranscript={(text) => setScript(text)}
+              disabled={loading}
             />
-            
-            <div className="flex justify-between items-center px-6 py-4 border-t border-white/5 bg-surface/80 backdrop-blur-xl rounded-b-2xl">
-              <div className="flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-[#6EE7B7]/40 animate-pulse glow" />
-                <span className="text-xs text-white/40 font-medium tracking-widest uppercase">Ready for generation</span>
-              </div>
-              
-              <MagneticButton
-                onClick={handleGenerate}
-                disabled={loading}
-                className={`flex items-center gap-2 px-8 py-3.5 rounded-full font-bold text-sm transition-shadow relative overflow-hidden group ${
-                  loading ? 'bg-white/5 text-white/20' : 'bg-[#6EE7B7] text-[#0a0a0a] accent-glow shadow-[0_0_40px_-10px_#6EE7B7] hover:shadow-[0_0_60px_-10px_#6EE7B7]'
-                }`}
-              >
-                {loading ? (
-                  <>
-                    <Cpu className="w-4 h-4 animate-spin" />
-                    Generating...
-                  </>
-                ) : (
-                  <>
-                    <Send className="w-4 h-4 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-                    Generate Brief
-                  </>
-                )}
-                
-                {!loading && (
-                  <div className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-in-out pointer-events-none" />
-                )}
-              </MagneticButton>
-            </div>
           </div>
         </motion.div>
 
