@@ -12,6 +12,27 @@ import PremiumVoiceInput from '@/components/PremiumVoiceInput';
 import TextReveal from '@/components/TextReveal';
 import { Brief, StyleType } from '@/lib/types';
 
+const PRESETS: { id: string; label: string; script: string; style: StyleType }[] = [
+  {
+    id: '30s-ad',
+    label: '30s Promo',
+    style: 'Commercial',
+    script: "Fast-paced product reveal. Start with an extreme close-up of the sleek metallic surface. Quick cuts showing the features with bold kinetic typography overlays. End with a cinematic logo reveal and a call-to-action on a clean minimalist background."
+  },
+  {
+    id: 'yt-intro',
+    label: 'YouTube Intro',
+    style: 'Explainer',
+    script: "Warm and welcoming. A soft transition from the creator's face to an animated channel logo. Use playful, organic motion for the 'Subscribe' button and social handles. The overall vibe is friendly and energetic with bright, optimistic colors."
+  },
+  {
+    id: 'insta-reel',
+    label: 'Instagram Reel',
+    style: 'Social Media',
+    script: "High-energy vertical content. Fast scroll-stopping opening with a glitch transition. Dynamic text-to-speech style captions popping on screen in sync with the beat. Vibrant neon accents and 3D depth effects to keep viewers engaged."
+  }
+];
+
 export default function Home() {
   const [apiKey, setApiKey] = useState('');
   const [script, setScript] = useState('');
@@ -192,6 +213,29 @@ export default function Home() {
           <div className="w-full flex flex-col items-start gap-3">
             <span className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em] ml-2">Choose Style</span>
             <StylePicker selected={style} onChange={setStyle} />
+          </div>
+
+          {/* Style Presets */}
+          <div className="w-full flex flex-col items-start gap-3">
+            <div className="flex items-center gap-2 ml-2">
+              <span className="text-[10px] font-bold text-white/30 uppercase tracking-[0.2em]">Quick Presets</span>
+              <div className="h-[1px] w-8 bg-white/5" />
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {PRESETS.map((preset) => (
+                <button
+                  key={preset.id}
+                  onClick={() => {
+                    setScript(preset.script);
+                    setStyle(preset.style);
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/5 border border-white/5 hover:border-[#6EE7B7]/30 hover:bg-[#6EE7B7]/5 transition-all group"
+                >
+                  <Sparkles className="w-3 h-3 text-white/20 group-hover:text-[#6EE7B7] transition-colors" />
+                  <span className="text-xs font-bold text-white/60 group-hover:text-white transition-colors">{preset.label}</span>
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Premium Voice Input / Script Area */}
