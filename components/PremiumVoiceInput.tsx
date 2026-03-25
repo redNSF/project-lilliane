@@ -46,11 +46,12 @@ export default function PremiumVoiceInput({ value, onChange, onSend, onTranscrip
           let finalTranscript = '';
           let currentInterim = '';
 
-          for (let i = event.resultIndex; i < event.results.length; ++i) {
-            if (event.results[i].isFinal) {
-              finalTranscript += event.results[i][0].transcript;
+          const newResults = Array.from(event.results).slice(event.resultIndex);
+          for (const result of newResults as any) {
+            if (result.isFinal) {
+              finalTranscript += result[0].transcript;
             } else {
-              currentInterim += event.results[i][0].transcript;
+              currentInterim += result[0].transcript;
             }
           }
 
