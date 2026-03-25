@@ -7,6 +7,7 @@ export interface Scene {
   motionStyle: string;
   colorHex: string[];
   colorDescription: string;
+  coolorsUrl?: string;
   textOverlay: string;
   assets: string[];
   transition: string;

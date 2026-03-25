@@ -100,7 +100,7 @@ export default function SceneCard({ scene, index }: SceneCardProps) {
             <div className="flex items-center gap-3 border-l border-white/10 pl-4">
               <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Moodboard:</span>
               <a 
-                href={`https://coolors.co/${scene.colorHex.map(h => h.replace('#', '')).join('-')}`}
+                href={scene.coolorsUrl || (scene.colorHex ? `https://coolors.co/${scene.colorHex.map(h => h.replace('#', '')).join('-')}` : '#')}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[10px] font-bold text-[#6EE7B7]/60 hover:text-[#6EE7B7] transition-colors flex items-center gap-1"

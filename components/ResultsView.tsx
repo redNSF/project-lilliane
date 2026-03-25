@@ -3,7 +3,7 @@
 import { Brief } from '@/lib/types';
 import { motion } from 'framer-motion';
 import { Copy, Check, Download, ArrowLeft, Share2, Sparkles, Send, Cpu, AlertCircle, Printer, ExternalLink, FileSpreadsheet } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import LZString from 'lz-string';
 import SceneCard from './SceneCard';
 import MagneticButton from './MagneticButton';
@@ -24,6 +24,15 @@ export default function ResultsView({ brief, onBack, isShareMode = false, onRevi
   const [isRevising, setIsRevising] = useState(false);
   const [revisionError, setRevisionError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const memoizedScenes = useMemo(() => {
+    return brief.scenes.map((scene) => ({
+      ...scene,
+      coolorsUrl: scene.colorHex?.length
+        ? `https://coolors.co/${scene.colorHex.map(h => h.replace('#', '')).join('-')}`
+        : '',
+    }));
+  }, [brief.scenes]);
 
   // Auto-grow textarea for revisions
   useEffect(() => {
@@ -299,7 +308,7 @@ ${brief.technicalNotes}
 
       {viewMode === 'brief' ? (
         <div className="space-y-8">
-          {brief.scenes.map((scene, index) => (
+          {memoizedScenes.map((scene, index) => (
             <SceneCard key={scene.id} scene={scene} index={index} />
           ))}
         </div>
@@ -333,7 +342,7 @@ ${brief.technicalNotes}
               </tr>
             </thead>
             <tbody>
-              {brief.scenes.map((scene) => (
+              {memoizedScenes.map((scene) => (
                 <tr key={scene.id} className="border-b border-gray-300 hover:bg-gray-50 transition-colors align-top group">
                   <td className="p-4 text-3xl font-black text-center text-gray-300 group-hover:text-black transition-colors">{scene.id}</td>
                   <td className="p-4 border-l border-gray-200">
@@ -348,7 +357,7 @@ ${brief.technicalNotes}
                         <p className="text-xs font-bold text-gray-600 mb-2">{scene.colorDescription}</p>
                         <div className="flex gap-3 print:hidden">
                            <a 
-                             href={`https://coolors.co/${scene.colorHex.map(h => h.replace('#', '')).join('-')}`}
+                             href={scene.coolorsUrl || (scene.colorHex ? `https://coolors.co/${scene.colorHex.map(h => h.replace('#', '')).join('-')}` : '#')}
                              target="_blank"
                              rel="noopener noreferrer"
                              className="text-[10px] font-bold text-blue-600 hover:underline flex items-center gap-1"
