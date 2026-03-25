@@ -2,7 +2,7 @@
 
 import { Brief } from '@/lib/types';
 import { motion } from 'framer-motion';
-import { Copy, Check, Download, ArrowLeft, Share2, Sparkles, Send, Cpu, AlertCircle, Printer, ExternalLink } from 'lucide-react';
+import { Copy, Check, Download, ArrowLeft, Share2, Sparkles, Send, Cpu, AlertCircle, Printer, ExternalLink, FileSpreadsheet } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import LZString from 'lz-string';
 import SceneCard from './SceneCard';
@@ -81,6 +81,51 @@ ${brief.technicalNotes}
     setTimeout(() => {
       URL.revokeObjectURL(url);
     }, 100);
+  };
+
+  const downloadShotListCSV = () => {
+    const headers = [
+      'Shot',
+      'Timecode',
+      'Duration',
+      'Script / Action',
+      'Motion Style',
+      'Visual / Color',
+      'Assets',
+      'Transition',
+      'Audio / Music'
+    ];
+
+    const rows = brief.scenes.map(s => [
+      s.id,
+      s.timecode,
+      s.duration,
+      `"${(s.scriptExcerpt || '').replace(/"/g, '""')}"`,
+      `"${(s.motionStyle || '').replace(/"/g, '""')}"`,
+      `"${(s.colorDescription || '').replace(/"/g, '""')}"`,
+      `"${(s.assets || []).join(', ').replace(/"/g, '""')}"`,
+      `"${(s.transition || '').replace(/"/g, '""')}"`,
+      `"${(s.audioMood || '').replace(/"/g, '""')}"`
+    ]);
+
+    const csvContent = [
+      headers.join(','),
+      ...rows.map(e => e.join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    
+    const cleanTitle = brief.title.replace(/[^a-z0-9]+/gi, '-').replace(/(^-|-$)/g, '').toLowerCase() || 'motion';
+    a.download = `${cleanTitle}-shot-list.csv`;
+    
+    document.body.appendChild(a);
+    a.click();
+    
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 100);
   };
 
   const generateShareLink = () => {
@@ -208,6 +253,15 @@ ${brief.technicalNotes}
           >
             <Download className="w-4 h-4" />
             Download md
+          </button>
+          
+          <button
+            onClick={downloadShotListCSV}
+            className="flex items-center gap-2 px-4 py-2 glass-card hover:border-[#6EE7B7]/50 transition-all text-sm font-medium"
+            title="Export Shot List as CSV"
+          >
+            <FileSpreadsheet className="w-4 h-4" />
+            Export CSV
           </button>
           
           <button
