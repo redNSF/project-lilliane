@@ -43,11 +43,20 @@ export async function POST(req: NextRequest) {
       throw new Error('No content returned from Groq');
     }
 
-    return NextResponse.json(JSON.parse(content));
-  } catch (error: any) {
+    try {
+      return NextResponse.json(JSON.parse(content));
+    } catch (parseError) {
+      console.error('JSON Parse Error:', parseError);
+      return NextResponse.json(
+        { error: 'Invalid JSON response from LLM' },
+        { status: 500 }
+      );
+    }
+  } catch (error: unknown) {
     console.error('Groq Revision Error:', error);
+    const errorMessage = error instanceof Error ? error.message : 'Failed to revise brief';
     return NextResponse.json(
-      { error: error.message || 'Failed to revise brief' },
+      { error: errorMessage },
       { status: 500 }
     );
   }
