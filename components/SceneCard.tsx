@@ -4,6 +4,7 @@ import { Scene } from '@/lib/types';
 import { motion } from 'framer-motion';
 import { Type, Play, Music, Layers, Palette, FolderOpen, ExternalLink, MousePointer2 } from 'lucide-react';
 import ColorSwatch from './ColorSwatch';
+import { useMemo } from 'react';
 
 interface SceneCardProps {
   scene: Scene;
@@ -11,6 +12,20 @@ interface SceneCardProps {
 }
 
 export default function SceneCard({ scene, index }: SceneCardProps) {
+  const coolorsUrl = useMemo(() => {
+    const hexCodes: string[] = [];
+    if (scene.colorHex && scene.colorHex.length > 0) {
+      for (const h of scene.colorHex) {
+        hexCodes.push(h.substring(1));
+      }
+    }
+    return hexCodes.length > 0 ? `https://coolors.co/${hexCodes.join('-')}` : '#';
+  }, [scene.colorHex]);
+
+  const pinterestUrl = useMemo(() => {
+    return `https://www.pinterest.com/search/pins/?q=${encodeURIComponent((scene.colorDescription || '') + ' motion design moodboard')}`;
+  }, [scene.colorDescription]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -35,7 +50,7 @@ export default function SceneCard({ scene, index }: SceneCardProps) {
 
       <div className="space-y-6">
         <div className="pl-4 border-l-2 border-[#6EE7B7]/30 italic text-sm text-foreground/80 leading-relaxed">
-          "{scene.scriptExcerpt}"
+          &quot;{scene.scriptExcerpt}&quot;
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -100,7 +115,7 @@ export default function SceneCard({ scene, index }: SceneCardProps) {
             <div className="flex items-center gap-3 border-l border-white/10 pl-4">
               <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Moodboard:</span>
               <a 
-                href={`https://coolors.co/${scene.colorHex.map(h => h.replace('#', '')).join('-')}`}
+                href={coolorsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[10px] font-bold text-[#6EE7B7]/60 hover:text-[#6EE7B7] transition-colors flex items-center gap-1"
@@ -108,7 +123,7 @@ export default function SceneCard({ scene, index }: SceneCardProps) {
                 Coolors <ExternalLink className="w-2.5 h-2.5" />
               </a>
               <a 
-                href={`https://www.pinterest.com/search/pins/?q=${encodeURIComponent(scene.colorDescription + ' motion design moodboard')}`}
+                href={pinterestUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[10px] font-bold text-[#6EE7B7]/60 hover:text-[#6EE7B7] transition-colors flex items-center gap-1"

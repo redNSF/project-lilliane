@@ -3,7 +3,7 @@
 import { Brief } from '@/lib/types';
 import { motion } from 'framer-motion';
 import { Copy, Check, Download, ArrowLeft, Share2, Sparkles, Send, Cpu, AlertCircle, Printer, ExternalLink, FileSpreadsheet } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useMemo } from 'react';
 import LZString from 'lz-string';
 import SceneCard from './SceneCard';
 import MagneticButton from './MagneticButton';
@@ -149,6 +149,26 @@ ${brief.technicalNotes}
       window.print();
     }
   };
+
+  const memoizedScenes = useMemo(() => {
+    return brief.scenes.map((scene) => {
+      const hexCodes: string[] = [];
+      if (scene.colorHex && scene.colorHex.length > 0) {
+        for (const h of scene.colorHex) {
+          hexCodes.push(h.substring(1));
+        }
+      }
+
+      const coolorsUrl = hexCodes.length > 0 ? `https://coolors.co/${hexCodes.join('-')}` : '#';
+      const pinterestUrl = `https://www.pinterest.com/search/pins/?q=${encodeURIComponent((scene.colorDescription || '') + ' motion design moodboard')}`;
+
+      return {
+        ...scene,
+        coolorsUrl,
+        pinterestUrl
+      };
+    });
+  }, [brief.scenes]);
 
   const handleRevise = async () => {
     if (!revisionNotes.trim()) {
@@ -333,7 +353,7 @@ ${brief.technicalNotes}
               </tr>
             </thead>
             <tbody>
-              {brief.scenes.map((scene) => (
+              {memoizedScenes.map((scene) => (
                 <tr key={scene.id} className="border-b border-gray-300 hover:bg-gray-50 transition-colors align-top group">
                   <td className="p-4 text-3xl font-black text-center text-gray-300 group-hover:text-black transition-colors">{scene.id}</td>
                   <td className="p-4 border-l border-gray-200">
@@ -341,14 +361,14 @@ ${brief.technicalNotes}
                     <div className="text-xs text-gray-500 mt-2 uppercase tracking-widest font-bold">{scene.duration}</div>
                   </td>
                   <td className="p-4 text-sm leading-relaxed text-gray-800 border-l border-gray-200">
-                    <p className="font-medium italic text-gray-600">"{scene.scriptExcerpt}"</p>
+                    <p className="font-medium italic text-gray-600">&quot;{scene.scriptExcerpt}&quot;</p>
                     {scene.colorDescription && scene.colorDescription !== 'None' && (
                       <div className="mt-4 pt-4 border-t border-gray-100">
                         <span className="text-[10px] uppercase font-black tracking-widest text-gray-400 block mb-1">Color Direction</span>
                         <p className="text-xs font-bold text-gray-600 mb-2">{scene.colorDescription}</p>
                         <div className="flex gap-3 print:hidden">
                            <a 
-                             href={`https://coolors.co/${scene.colorHex.map(h => h.replace('#', '')).join('-')}`}
+                             href={scene.coolorsUrl}
                              target="_blank"
                              rel="noopener noreferrer"
                              className="text-[10px] font-bold text-blue-600 hover:underline flex items-center gap-1"
@@ -356,7 +376,7 @@ ${brief.technicalNotes}
                              Coolors <ExternalLink className="w-2.5 h-2.5" />
                            </a>
                            <a 
-                             href={`https://www.pinterest.com/search/pins/?q=${encodeURIComponent(scene.colorDescription + ' motion design moodboard')}`}
+                             href={scene.pinterestUrl}
                              target="_blank"
                              rel="noopener noreferrer"
                              className="text-[10px] font-bold text-red-600 hover:underline flex items-center gap-1"
