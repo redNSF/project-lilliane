@@ -1,0 +1,37 @@
+
+> project-lilliane@0.1.0 start
+> next start
+
+▲ Next.js 16.2.1
+- Local:         http://localhost:3000
+- Network:       http://192.168.0.2:3000
+✓ Ready in 194ms
+Groq Generation Error: Error: 401 {"error":{"message":"Invalid API Key","type":"invalid_request_error","code":"invalid_api_key"}}
+    at async w (.next/server/chunks/[root-of-the-server]__06gwqg5._.js:55:619)
+    at async l (.next/server/chunks/[root-of-the-server]__06gwqg5._.js:55:4278)
+    at async s (.next/server/chunks/[root-of-the-server]__06gwqg5._.js:55:5319) {
+  status: 401,
+  headers: Headers {
+    date: 'Wed, 01 Apr 2026 13:33:48 GMT',
+    'content-type': 'application/json',
+    'content-length': '96',
+    connection: 'keep-alive',
+    'cache-control': 'private, max-age=0, no-store, no-cache, must-revalidate',
+    server: 'cloudflare',
+    vary: 'Origin',
+    'x-groq-region': 'msp',
+    'x-request-id': 'req_01kn4m044cek78yvz7am8c2nwk',
+    'cf-cache-status': 'DYNAMIC',
+    'set-cookie': '__cf_bm=B7cevMQKaAH_BRBwQBepU9Q_3u4BLqEjYPmUXPfCXOg-1775050428.5435805-1.0.1.1-H8H7LPSwBUnAkUPwUE5_YcN7pJV9V5IZgKYcJ4vRdFLn3ZrHr_BIX39.Ffxg_ocsIbX5Vm7BPwDvvOU2OWweIymvQqkuT.yrR4nQK7GAebHQ.eSEjQlYqL1N9iGNWTn8; HttpOnly; Secure; Path=/; Domain=groq.com; Expires=Wed, 01 Apr 2026 14:03:48 GMT',
+    'strict-transport-security': 'max-age=15552000',
+    'cf-ray': '9e57f7ba691d17d6-ORD',
+    'alt-svc': 'h3=":443"; ma=86400'
+  },
+  error: {
+    error: {
+      message: 'Invalid API Key',
+      type: 'invalid_request_error',
+      code: 'invalid_api_key'
+    }
+  }
+}

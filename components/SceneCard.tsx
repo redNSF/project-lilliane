@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo } from 'react';
 import { Scene } from '@/lib/types';
 import { motion } from 'framer-motion';
 import { Type, Play, Music, Layers, Palette, FolderOpen, ExternalLink, MousePointer2 } from 'lucide-react';
@@ -11,6 +12,14 @@ interface SceneCardProps {
 }
 
 export default function SceneCard({ scene, index }: SceneCardProps) {
+  const coolorsUrl = useMemo(() => {
+    return `https://coolors.co/${scene.colorHex.map(h => h.replace('#', '')).join('-')}`;
+  }, [scene.colorHex]);
+
+  const pinterestUrl = useMemo(() => {
+    return `https://www.pinterest.com/search/pins/?q=${encodeURIComponent(scene.colorDescription + ' motion design moodboard')}`;
+  }, [scene.colorDescription]);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -100,7 +109,7 @@ export default function SceneCard({ scene, index }: SceneCardProps) {
             <div className="flex items-center gap-3 border-l border-white/10 pl-4">
               <span className="text-[10px] font-bold text-white/20 uppercase tracking-widest">Moodboard:</span>
               <a 
-                href={`https://coolors.co/${scene.colorHex.map(h => h.replace('#', '')).join('-')}`}
+                href={coolorsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[10px] font-bold text-[#6EE7B7]/60 hover:text-[#6EE7B7] transition-colors flex items-center gap-1"
@@ -108,7 +117,7 @@ export default function SceneCard({ scene, index }: SceneCardProps) {
                 Coolors <ExternalLink className="w-2.5 h-2.5" />
               </a>
               <a 
-                href={`https://www.pinterest.com/search/pins/?q=${encodeURIComponent(scene.colorDescription + ' motion design moodboard')}`}
+                href={pinterestUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-[10px] font-bold text-[#6EE7B7]/60 hover:text-[#6EE7B7] transition-colors flex items-center gap-1"
