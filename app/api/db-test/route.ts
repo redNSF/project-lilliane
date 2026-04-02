@@ -1,5 +1,12 @@
-import { createPool } from '@vercel/postgres';
-const pool = createPool();
+import { createPool, VercelPool } from '@vercel/postgres';
+
+let _pool: VercelPool | null = null;
+function getDb() {
+  if (!_pool) {
+    _pool = createPool();
+  }
+  return _pool;
+}
 import { NextResponse } from 'next/server';
 
 export const dynamic = 'force-dynamic';
@@ -18,7 +25,7 @@ export async function GET() {
     }
 
     // 2. Try a simple query
-    const result = await pool.sql`SELECT NOW();`;
+    const result = await getDb().sql`SELECT NOW();`;
     
     return NextResponse.json({
       status: 'Connected ✓',
