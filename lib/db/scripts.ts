@@ -1,4 +1,5 @@
-import { sql } from '@vercel/postgres';
+import { createPool } from '@vercel/postgres';
+const pool = createPool();
 import { nanoid } from 'nanoid';
 import { Brief } from '../types';
 
@@ -24,7 +25,7 @@ export interface ScriptFull {
  * Creates the scripts table if it doesn't exist.
  */
 export async function setupDatabase() {
-  await sql`
+  await pool.sql`
     CREATE TABLE IF NOT EXISTS scripts (
       id TEXT PRIMARY KEY,
       title TEXT NOT NULL,
@@ -50,7 +51,7 @@ export async function saveScript(params: {
   const id = nanoid(10);
   const { title, content, author_name = 'Anonymous', has_password = false, password_hash = null } = params;
 
-  await sql`
+  await pool.sql`
     INSERT INTO scripts (id, title, content, author_name, has_password, password_hash)
     VALUES (${id}, ${title}, ${content}, ${author_name}, ${has_password}, ${password_hash})
   `;
@@ -62,7 +63,7 @@ export async function saveScript(params: {
  * Fetches script metadata (excluding protected content).
  */
 export async function getScriptMetadata(id: string): Promise<ScriptMetadata | null> {
-  const { rows } = await sql<ScriptMetadata>`
+  const { rows } = await pool.sql<ScriptMetadata>`
     SELECT id, title, author_name, has_password, created_at 
     FROM scripts 
     WHERE id = ${id}
@@ -76,7 +77,7 @@ export async function getScriptMetadata(id: string): Promise<ScriptMetadata | nu
  * Internal use for unlocking.
  */
 export async function getScriptFull(id: string): Promise<ScriptFull | null> {
-  const { rows } = await sql<ScriptFull>`
+  const { rows } = await pool.sql<ScriptFull>`
     SELECT * FROM scripts WHERE id = ${id}
   `;
 
