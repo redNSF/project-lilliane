@@ -35,6 +35,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ id });
   } catch (err: any) {
     console.error('Failed to save script:', err);
-    return NextResponse.json({ error: 'Failed to save script to database' }, { status: 500 });
+    return NextResponse.json({ 
+      error: 'Failed to save script to database',
+      details: err.message || 'Unknown error'
+    }, { status: 500 });
   }
 }

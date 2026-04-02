@@ -36,7 +36,8 @@ export default function ShareModal({ isOpen, onClose, brief }: ShareModalProps) 
       });
 
       if (!response.ok) {
-        throw new Error('Failed to save script to database');
+        const errorData = await response.json();
+        throw new Error(errorData.details || errorData.error || 'Failed to save script to database');
       }
 
       const { id } = await response.json();
