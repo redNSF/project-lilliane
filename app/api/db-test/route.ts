@@ -3,7 +3,9 @@ import { createClient, VercelClient } from '@vercel/postgres';
 let _client: VercelClient | null = null;
 async function getDb() {
   if (!_client) {
-    _client = createClient();
+    _client = createClient({
+      connectionString: process.env.POSTGRES_URL
+    });
     await _client.connect();
   }
   return _client;
