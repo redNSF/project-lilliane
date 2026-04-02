@@ -7,6 +7,7 @@ import { useState, useRef, useEffect } from 'react';
 import LZString from 'lz-string';
 import SceneCard from './SceneCard';
 import MagneticButton from './MagneticButton';
+import ShareModal from './ShareModal';
 
 interface ResultsViewProps {
   brief: Brief;
@@ -23,7 +24,9 @@ export default function ResultsView({ brief, onBack, isShareMode = false, onRevi
   const [revisionNotes, setRevisionNotes] = useState('');
   const [isRevising, setIsRevising] = useState(false);
   const [revisionError, setRevisionError] = useState<string | null>(null);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   // Auto-grow textarea for revisions
   useEffect(() => {
@@ -128,15 +131,8 @@ ${brief.technicalNotes}
     setTimeout(() => URL.revokeObjectURL(url), 100);
   };
 
-  const generateShareLink = () => {
-    const jsonStr = JSON.stringify(brief);
-    const compressed = LZString.compressToEncodedURIComponent(jsonStr);
-    const origin = typeof window !== 'undefined' && window.location.origin ? window.location.origin : '';
-    const shareUrl = `${origin}/share?b=${compressed}`;
-    
-    navigator.clipboard.writeText(shareUrl);
-    setShareCopied(true);
-    setTimeout(() => setShareCopied(false), 2000);
+  const openShareModal = () => {
+    setIsShareModalOpen(true);
   };
 
   const handleDownloadPDF = () => {
@@ -230,11 +226,11 @@ ${brief.technicalNotes}
         <div className="flex flex-wrap gap-3">
           {!isShareMode && (
              <button
-              onClick={generateShareLink}
+              onClick={openShareModal}
               className="flex items-center gap-2 px-4 py-2 bg-[#6EE7B7]/10 text-[#6EE7B7] hover:bg-[#6EE7B7]/20 border border-[#6EE7B7]/30 rounded-lg transition-all text-sm font-medium"
             >
-              {shareCopied ? <Check className="w-4 h-4" /> : <Share2 className="w-4 h-4" />}
-              {shareCopied ? 'Link Copied!' : 'Share Link'}
+              <Share2 className="w-4 h-4" />
+              Store & Share Link
             </button>
           )}
 
@@ -471,6 +467,12 @@ ${brief.technicalNotes}
           )}
         </>
       )}
+      
+      <ShareModal 
+        isOpen={isShareModalOpen} 
+        onClose={() => setIsShareModalOpen(false)} 
+        brief={brief} 
+      />
     </motion.div>
   );
 }
