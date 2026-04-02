@@ -1,14 +1,13 @@
-import { createClient, VercelClient } from '@vercel/postgres';
+import { Pool } from 'pg';
 
-let _client: VercelClient | null = null;
-async function getDb() {
-  if (!_client) {
-    _client = createClient({
-      connectionString: process.env.POSTGRES_URL
+let _pool: Pool | null = null;
+function getDb() {
+  if (!_pool) {
+    _pool = new Pool({
+      connectionString: process.env.POSTGRES_URL,
     });
-    await _client.connect();
   }
-  return _client;
+  return _pool;
 }
 import { NextResponse } from 'next/server';
 
@@ -28,8 +27,8 @@ export async function GET() {
     }
 
     // 2. Try a simple query
-    const db = await getDb();
-    const result = await db.sql`SELECT NOW();`;
+    const db = getDb();
+    const result = await db.query(`SELECT NOW();`);
     
     return NextResponse.json({
       status: 'Connected ✓',
