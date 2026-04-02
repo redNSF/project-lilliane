@@ -5,8 +5,10 @@ import { Brief } from '../types';
 let _pool: Pool | null = null;
 function getDb() {
   if (!_pool) {
+    const isLocal = !process.env.POSTGRES_URL || process.env.POSTGRES_URL.includes('localhost') || process.env.POSTGRES_URL.includes('127.0.0.1');
     _pool = new Pool({
       connectionString: process.env.POSTGRES_URL,
+      ssl: isLocal ? false : { rejectUnauthorized: false },
     });
   }
   return _pool;

@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getScriptMetadata, getScriptFull } from '@/lib/db/scripts';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: Request, context: any) {
   const { id } = context.params;
 
