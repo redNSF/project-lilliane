@@ -1,17 +1,13 @@
-import { Pool } from 'pg';
+import { neon } from '@neondatabase/serverless';
 import { nanoid } from 'nanoid';
 import { Brief } from '../types';
 
-let _pool: Pool | null = null;
 function getDb() {
-  if (!_pool) {
-    const isLocal = !process.env.POSTGRES_URL || process.env.POSTGRES_URL.includes('localhost') || process.env.POSTGRES_URL.includes('127.0.0.1');
-    _pool = new Pool({
-      connectionString: process.env.POSTGRES_URL,
-      ssl: isLocal ? false : { rejectUnauthorized: false },
-    });
+  const url = process.env.DATABASE_URL || process.env.POSTGRES_URL;
+  if (!url) {
+    throw new Error('Database connection string is missing.');
   }
-  return _pool;
+  return neon(url);
 }
 
 export interface ScriptMetadata {
@@ -36,8 +32,8 @@ export interface ScriptFull {
  * Creates the scripts table if it doesn't exist.
  */
 export async function setupDatabase() {
-  const db = getDb();
-  await db.query(`
+  const sql = getDb();
+  await sql`
     CREATE TABLE IF NOT EXISTS scripts (
       id TEXT PRIMARY KEY,
       title TEXT NOT NULL,
@@ -47,7 +43,7 @@ export async function setupDatabase() {
       password_hash TEXT,
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );
-  `);
+  `;
 }
 
 /**
@@ -63,11 +59,11 @@ export async function saveScript(params: {
   const id = nanoid(10);
   const { title, content, author_name = 'Anonymous', has_password = false, password_hash = null } = params;
 
-  const db = getDb();
-  await db.query(`
+  const sql = getDb();
+  await sql`
     INSERT INTO scripts (id, title, content, author_name, has_password, password_hash)
-    VALUES ($1, $2, $3, $4, $5, $6)
-  `, [id, title, content, author_name, has_password, password_hash]);
+    VALUES (${id}, ${title}, ${content}, ${author_name}, ${has_password}, ${password_hash})
+  `;
 
   return id;
 }
@@ -76,14 +72,14 @@ export async function saveScript(params: {
  * Fetches script metadata (excluding protected content).
  */
 export async function getScriptMetadata(id: string): Promise<ScriptMetadata | null> {
-  const db = getDb();
-  const { rows } = await db.query(`
+  const sql = getDb();
+  const rows = await sql`
     SELECT id, title, author_name, has_password, created_at 
     FROM scripts 
-    WHERE id = $1
-  `, [id]);
+    WHERE id = ${id}
+  `;
 
-  return rows[0] || null;
+  return (rows[0] as ScriptMetadata) || null;
 }
 
 /**
@@ -91,10 +87,11 @@ export async function getScriptMetadata(id: string): Promise<ScriptMetadata | nu
  * Internal use for unlocking.
  */
 export async function getScriptFull(id: string): Promise<ScriptFull | null> {
-  const db = getDb();
-  const { rows } = await db.query(`
-    SELECT * FROM scripts WHERE id = $1
-  `, [id]);
+  const sql = getDb();
+  const rows = await sql`
+    SELECT * FROM scripts WHERE id = ${id}
+  `;
 
-  return rows[0] || null;
+  return (rows[0] as ScriptFull) || null;
 }
+
