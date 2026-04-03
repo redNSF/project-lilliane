@@ -3,8 +3,8 @@ import { getScriptFull } from '@/lib/db/scripts';
 import { decrypt } from '@/lib/encryption';
 import bcrypt from 'bcryptjs';
 
-export async function POST(request: Request, context: any) {
-  const { id } = context.params;
+export async function POST(request: Request, context: { params: Promise<{ id: string }> }) {
+  const { id } = await context.params;
 
   try {
     const { password } = await request.json();

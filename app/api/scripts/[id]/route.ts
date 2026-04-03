@@ -3,8 +3,8 @@ import { getScriptMetadata, getScriptFull } from '@/lib/db/scripts';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET(request: Request, context: any) {
-  const { id } = context.params;
+export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
+  const { id } = await context.params;
 
   try {
     const metadata = await getScriptMetadata(id);
