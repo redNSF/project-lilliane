@@ -1,6 +1,6 @@
 # Motionbrief 🎬 — The Intelligent Motion Design Briefing Engine
 
-**Motionbrief** is a high-end, production-ready **Script-to-Motion Design Brief Generator**. Built with **Next.js 15**, **Framer Motion**, and powered by **LLaMA 3.3 (via Groq)**, it transforms raw ideas into professional creative roadmaps in seconds.
+**Motionbrief** is a high-end, production-ready **Script-to-Motion Design Brief Generator**. Built with **Next.js 16**, **Tailwind CSS 4**, **Framer Motion**, and powered by **LLaMA 3.3 (via Groq)**, it transforms raw ideas into professional creative roadmaps in seconds.
 
 Designed for motion designers, creative directors, and motion studios, Motionbrief streamlines pre-production by generating timecodes, scene breakdowns, color palettes, typography suggestions, and asset lists.
 
@@ -24,17 +24,19 @@ Export your briefing documents as crisp, vector-quality PDFs. Optimized with cus
 ### ⚡ Style Presets
 Jumpstart your workflow with professional script templates for **30s Promo Ads**, **YouTube Intros**, and **Instagram Reels**. One click fills the terminal and selects the ideal motion style.
 
-### 🔗 Zero-Database Sharing
-Share your generated briefs instantly. We use **LZ-String compression** to bake the entire project data into a shareable URL—no database, no login, no friction.
+### ☁️ Cloud Storage & Secure Sharing
+Share your generated briefs instantly with persistent cloud storage powered by **Neon Postgres**. You can now **password-protect** your shared briefs with client-side encryption, ensuring your creative visions remain private until ready for reveal.
 
 ---
 
 ## 🚀 Tech Stack
 
-- **Framework:** Next.js 15 (App Router)
-- **Styling:** Tailwind CSS
+- **Framework:** Next.js 16 (App Router)
+- **Styling:** Tailwind CSS 4
 - **Animations:** Framer Motion
 - **AI Integration:** Groq SDK (LLaMA 3.3 70B)
+- **Database:** Neon Serverless Postgres
+- **Security:** bcryptjs (for script protection)
 - **Icons:** Lucide React
 - **Voice Logic:** Web Speech API
 
@@ -53,8 +55,13 @@ Share your generated briefs instantly. We use **LZ-String compression** to bake 
    npm install
    ```
 
-3. **Get your API Key:**
-   Get a free API key from the [Groq Console](https://console.groq.com/keys).
+3. **Set up environment variables:**
+   Create a `.env.local` file in the root directory and add your keys:
+   ```env
+   GROQ_API_KEY=your_groq_api_key_here
+   DATABASE_URL=your_neon_postgres_url_here
+   ```
+   *Note: You can get a free Groq API key from the [Groq Console](https://console.groq.com/keys).*
 
 4. **Run the development server:**
    ```bash
