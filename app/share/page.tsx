@@ -6,6 +6,7 @@ import LZString from 'lz-string';
 import { Brief } from '@/lib/types';
 import ResultsView from '@/components/ResultsView';
 import AnimatedBackground from '@/components/AnimatedBackground';
+import Footer from '@/components/Footer';
 import { Sparkles, ArrowLeft } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -91,6 +92,8 @@ function ShareContent() {
           </div>
         )}
       </div>
+
+      <Footer />
     </main>
   );
 }

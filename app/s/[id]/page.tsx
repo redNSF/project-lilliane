@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Brief } from '@/lib/types';
 import ResultsView from '@/components/ResultsView';
 import AnimatedBackground from '@/components/AnimatedBackground';
+import Footer from '@/components/Footer';
 import { Lock, Sparkles, ArrowLeft, ShieldCheck, Loader2, AlertCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -78,13 +79,16 @@ export default function SharePage({ params }: SharePageProps) {
         <AnimatedBackground />
         <Loader2 className="w-8 h-8 text-[#6EE7B7] animate-spin" />
         <p className="text-white/40 text-sm font-medium animate-pulse">Fetching brief...</p>
+        <div className="absolute bottom-0 left-0 w-full">
+          <Footer />
+        </div>
       </main>
     );
   }
 
   if (error && !metadata) {
     return (
-      <main className="min-h-screen pt-24 pb-12 px-6 relative flex items-center justify-center">
+      <main className="min-h-screen pt-24 pb-12 px-6 relative flex flex-col items-center justify-center">
         <AnimatedBackground />
         <div className="glass-card p-12 text-center max-w-md w-full relative z-10 border-red-500/20">
           <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-6" />
@@ -97,6 +101,7 @@ export default function SharePage({ params }: SharePageProps) {
              Back to Safety
           </button>
         </div>
+        <Footer />
       </main>
     );
   }
@@ -162,7 +167,7 @@ export default function SharePage({ params }: SharePageProps) {
                 </button>
               </form>
             </motion.div>
-          ) : brief ? (
+             ) : brief ? (
             <motion.div
               key="results"
               initial={{ opacity: 0 }}
@@ -198,6 +203,8 @@ export default function SharePage({ params }: SharePageProps) {
           ) : null}
         </AnimatePresence>
       </div>
+
+      <Footer />
     </main>
   );
 }

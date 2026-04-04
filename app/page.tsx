@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Sparkles, Key, Send, History, Trash2, Cpu } from 'lucide-react';
+import { Sparkles, Key, Send, History, Trash2, Cpu, ShieldCheck } from 'lucide-react';
 import StylePicker from '@/components/StylePicker';
 import ResultsView from '@/components/ResultsView';
 import SkeletonCard from '@/components/SkeletonCard';
@@ -10,6 +10,7 @@ import Toast from '@/components/Toast';
 import AnimatedBackground from '@/components/AnimatedBackground';
 import PremiumVoiceInput from '@/components/PremiumVoiceInput';
 import TextReveal from '@/components/TextReveal';
+import Footer from '@/components/Footer';
 import { Brief, StyleType } from '@/lib/types';
 
 const PRESETS: { id: string; label: string; script: string; style: StyleType }[] = [
@@ -119,16 +120,20 @@ export default function Home() {
 
   if (result) {
     return (
-      <ResultsView 
-        brief={result} 
-        onBack={() => setResult(null)} 
-        onRevise={(newBrief) => {
-          setResult(newBrief);
-          saveToHistory(newBrief);
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }}
-        apiKey={apiKey}
-      />
+      <main className="min-h-screen relative overflow-hidden">
+        <AnimatedBackground />
+        <ResultsView 
+          brief={result} 
+          onBack={() => setResult(null)} 
+          onRevise={(newBrief) => {
+            setResult(newBrief);
+            saveToHistory(newBrief);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          apiKey={apiKey}
+        />
+        <Footer />
+      </main>
     );
   }
 
@@ -207,6 +212,10 @@ export default function Home() {
             >
               Get your free API key from Groq Console →
             </a>
+            <p className="text-[10px] text-white/20 ml-2 flex items-center gap-1">
+              <ShieldCheck className="w-3 h-3" />
+              Your key is stored only in your browser&apos;s local storage and never sent to our servers.
+            </p>
           </div>
 
           {/* Style Picker */}
@@ -303,6 +312,8 @@ export default function Home() {
           </motion.div>
         )}
       </div>
+
+      <Footer />
 
       <Toast 
         message={error || ''} 
